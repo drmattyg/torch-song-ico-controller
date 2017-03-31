@@ -1,4 +1,9 @@
 #include <CurieIMU.h>
+#include <CurieBLE.h>
+
+BLEPeripheral     blePeripheral;
+BLEService        torchSongCtl("FEFE");
+BLECharacteristic torchSongFace("EFEF",BLERead|BLENotify,sizeof(int));
 
 void setup()
 {
@@ -6,6 +11,11 @@ void setup()
   while (!Serial);
   CurieIMU.begin();
   CurieIMU.setAccelerometerRange(2);
+  blePeripheral.setLocalName("touch-song-control");
+  blePeripheral.setAdvertisedServiceUuid(torchSongCtl.uuid());
+  blePeripheral.addAttribute(torchSongCtl);
+  blePeripheral.addAttribute(torchSongFace);
+  blePeripheral.begin();
 }
 
 // icosahedron face normal vectors
@@ -61,11 +71,16 @@ int upface(-1);
 void loop()
 {
   int face;
+  BLECentral central = blePeripheral.central();
   CurieIMU.getAcceleration(&X,&Y,&Z);
   face = faceup();
   if (face != upface) {
     upface = face;
     Serial.print(upface);
     Serial.println();
+  }
+  if (central) {
+    Serial.println("Shoob");
+    torchSongFace.setValue((unsigned char*)&upface,sizeof(int));
   }
 }
