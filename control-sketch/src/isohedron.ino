@@ -1,9 +1,8 @@
 #include <CurieIMU.h>
 #include <CurieBLE.h>
-
 BLEPeripheral     blePeripheral;
-BLEService        torchSongCtl("FEFE");
-BLECharacteristic torchSongFace("EFEF",BLERead|BLENotify,sizeof(int));
+BLEService        torchSongCtl("180D");
+BLECharacteristic torchSongFace("2A37",BLERead|BLENotify,sizeof(int));
 
 void setup()
 {
